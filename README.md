@@ -2,44 +2,62 @@
 
 ## 快速開始
 
-### 1. 安裝依賴
+### 前置需求
+
+- [Docker](https://www.docker.com/) (RP Server + Frontend)
+- [uv](https://docs.astral.sh/uv/) (Python Authenticator)
+
+### 步驟 1 — 啟動 RP Server 與前端
 
 ```bash
-uv sync          # 安裝 Python 相依
-cd frontend
-bun install      # 安裝前端依賴
+docker compose up -d
 ```
 
-## 專案啟動 (請務必照順序)
+第一次執行會 build image，之後重啟很快。
 
-### 2. 啟動 RP Server
+- 前端：http://localhost:3000
+- RP Server：http://localhost:5005
+
+### 步驟 2 — 啟動 Authenticator
 
 ```bash
-uv run flask --app rp_server.app run --port 5005 --debug # Note: 在 project 根目錄運行
+uv run python -m authenticator --url http://localhost:3000
 ```
 
-RP 預設使用 `sqlite:///rp_server/data/rp.db`，第一次啟動會自動建立資料庫。
+Authenticator 會開啟一個 Chromium 視窗，並攔截 WebAuthn API。
 
-### 3. 啟動前端
+---
+
+## 選用功能
+
+### 停止服務
 
 ```bash
-cd frontend
-bun dev
+docker compose down
 ```
 
-### 4. 啟動 Authenticator
+### 查看 RP Server 與前端 logs
 
 ```bash
-uv run python -m authenticator --url http://localhost:3000 # Note: 在 project 根目錄運行
+docker compose logs -f
 ```
 
-### 5. 啟動 Database Studio (Optional)
+### Database Studio（觀察 DB 資料）
 
 ```bash
 cd drizzle
-bun install      # 安裝依賴
+bun install
 bun run db:studio
 ```
 
-使用瀏覽器到 https://local.drizzle.studio 就可以觀察 DB records 的變化啦
+開啟瀏覽器到 https://local.drizzle.studio
 
+---
+
+## 注意事項
+
+Authenticator 需在 macOS 本機執行，無法 Dockerize，原因如下：
+
+- 使用 macOS Touch ID 進行使用者驗證
+- 使用 macOS Keychain 儲存憑證
+- Playwright 需要開啟真實 GUI 視窗

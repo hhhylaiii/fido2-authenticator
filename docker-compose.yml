@@ -1,0 +1,21 @@
+services:
+  rp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.rp
+    ports:
+      - "5005:5005"
+    volumes:
+      - rp_data:/app/rp_server/data
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rp-server
+
+volumes:
+  rp_data:

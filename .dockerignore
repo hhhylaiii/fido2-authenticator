@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+authenticator/data/
+rp_server/data/
+
+# Node
+frontend/node_modules/
+frontend/.next/
+drizzle/node_modules/
+extension/node_modules/
+
+# Extension (not used in Docker)
+extension/
+
+# Git
+.git/
+
+# Docs
+codex/
+*.md
