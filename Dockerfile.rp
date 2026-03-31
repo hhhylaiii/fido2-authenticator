@@ -1,5 +1,20 @@
 FROM python:3.11-slim
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git cmake ninja-build build-essential libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Pre-build liboqs from source so liboqs-python doesn't need to clone at runtime
+RUN git clone --depth 1 https://github.com/open-quantum-safe/liboqs.git /tmp/liboqs && \
+    cmake -S /tmp/liboqs -B /tmp/liboqs/build \
+      -GNinja \
+      -DCMAKE_INSTALL_PREFIX=/opt/liboqs \
+      -DOQS_DIST_BUILD=ON \
+      -DBUILD_SHARED_LIBS=ON && \
+    cmake --build /tmp/liboqs/build && \
+    cmake --install /tmp/liboqs/build && \
+    rm -rf /tmp/liboqs
+
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 WORKDIR /app
@@ -14,7 +29,8 @@ COPY rp_server/ ./rp_server/
 RUN mkdir -p rp_server/data
 
 ENV PATH="/app/.venv/bin:$PATH" \
-    PYTHONPATH="/app"
+    PYTHONPATH="/app" \
+    OQS_INSTALL_PATH="/opt/liboqs"
 
 EXPOSE 5005
 CMD ["flask", "--app", "rp_server.app", "run", "--host", "0.0.0.0", "--port", "5005"]
