@@ -6,7 +6,7 @@ services:
     ports:
       - "5005:5005"
     volumes:
-      - rp_data:/app/rp_server/data
+      - ./rp_server/data:/app/rp_server/data
 
   frontend:
     build:
@@ -16,6 +16,3 @@ services:
       - "3000:3000"
     depends_on:
       - rp-server
-
-volumes:
-  rp_data:

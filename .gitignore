@@ -1,0 +1,16 @@
+# Runtime data
+rp_server/data/rp.db
+authenticator/data/credential_index.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# Environment
+.env
+.env.*
+
+# macOS
+.DS_Store
